@@ -17,8 +17,8 @@ import java.util.Random;
 
 public class SkyViewGradientBackgroundPainter {
 
-    private static final int MIN = 4000;
-    private static final int MAX = 5000;
+    private static final int MIN = 2000;
+    private static final int MAX = 4500;
 
     private final Random random;
     private final Handler handler;
