@@ -1,5 +1,9 @@
 package me.sangs.time.sky.view;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -8,9 +12,12 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import java.util.ArrayList;
@@ -34,9 +41,18 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
     private Time mSkyTime = Time.AFTERNOON;
     private boolean isAutoStart = false;
+    private boolean isPlanetVisible = false;
     private int[] mDrawables = new int[3];
+    private AnimatorSet mAnimatorSet = new AnimatorSet();
+    private AppCompatImageView mPlanetView;
+
+    private boolean isChangeWait = false;
+
+    private Handler mHandler = new Handler();
 
     private ArrayList<Point> mPathList = new ArrayList();
+
+    int mAnimationIndex = 0;
 
     public SkyTimeBackgroundView(Context context) {
         super(context);
@@ -46,15 +62,19 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     public SkyTimeBackgroundView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        //calculateParabolaPath();
         initBackground(attrs, 0);
         startAnimation();
+        //planetAnimationStart();
     }
 
     public SkyTimeBackgroundView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
+        //calculateParabolaPath();
         initBackground(attrs, defStyleAttr);
         startAnimation();
+        //planetAnimationStart();
     }
 
     private void setTime(Time t) {
@@ -86,25 +106,11 @@ public class SkyTimeBackgroundView extends RelativeLayout {
             mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.evening));
         }
 
+        isChangeWait = true;
     }
 
     private void initBackground(AttributeSet attrs, int defStyle) {
-        double mWidthSplit = SkyViewUtils.getScreenWidth(getContext()) / (double)100;
-
-        for(int i = 0; i < 100; i++) {
-            double mX = mWidthSplit * (i + 1);
-            int mRadius = getWidth() / 2 + 200;
-
-            double mArea = mRadius - (getWidth() / 2);
-
-            double mY = Math.pow(mRadius, 2);
-            mY = mY - Math.pow(((getWidth() / 2 - mX) + mArea), 2);
-            mY = Math.sqrt(Math.abs(mY));
-
-
-
-            Log.e("TEST", mX + ", " + mY);
-        }
+        mPlanetView = new AppCompatImageView(getContext());
 
         TypedArray mArray;
 
@@ -115,6 +121,7 @@ public class SkyTimeBackgroundView extends RelativeLayout {
         }
 
         isAutoStart = mArray.getBoolean(R.styleable.SkyTimeBackgroundView_autoStart, false);
+        isPlanetVisible = mArray.getBoolean(R.styleable.SkyTimeBackgroundView_planetVisible, true);
 
         mArray.recycle();
 
@@ -124,10 +131,16 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     }
 
     private void calculateParabolaPath() {
-        double mWidthSplit = SkyViewUtils.getScreenWidth(getContext()) / (double)100;
+        double mWidthSplit = SkyViewUtils.getScreenWidth(getContext()) / (double)120;
 
-        for(int i = 0; i < 100; i++) {
-            double mX = mWidthSplit * (i + 1);
+        for(int i = 0; i <= 120; i++) {
+            double mX;
+            if(i == 0) {
+                mX = 0;
+            } else {
+                mX = mWidthSplit * i;
+            }
+
             int mRadius = getWidth() / 2 + 200;
 
             double mArea = mRadius - (getWidth() / 2 + 200);
@@ -137,36 +150,223 @@ public class SkyTimeBackgroundView extends RelativeLayout {
             mY = Math.abs(Math.sqrt(Math.abs(mY)) - getHeight() / 6 * 5);
 
             Point mPoint = new Point();
-            mPoint.x = mX;
-            mPoint.y = mY;
+            mPoint.x = (float)mX;
+            mPoint.y = (float)mY;
 
             mPathList.add(mPoint);
+
+            //Log.e("TEST", mX + " / " + mY);
         }
 
         Collections.reverse(mPathList);
     }
 
-    /*@Override
+    boolean isT = false;
+
     protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-
-        //int mX = getWidth();
-        //int mY = getHeight();
-        //int mRadius = getWidth() / 2 + 200;
-
-        Paint mPaint = new Paint();
+        //super.onDraw(canvas);
+        /*Paint mPaint = new Paint();
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.RED);
-
-        //canvas.drawPaint(mPaint);
-
         mPaint.setStrokeWidth(1);
-        //canvas.drawCircle(mX / 2, mY / 6 * 5, mRadius, mPaint);
-    }*/
+
+        double mWidthSplit = SkyViewUtils.getScreenWidth(getContext()) / (double)100;
+
+        if(!isT) {
+            for(int i = 0; i < 100; i++) {
+                double mX = mWidthSplit * (i + 1);
+                int mRadius = getWidth() / 2 + 200;
+
+                double mArea = mRadius - (getWidth() / 2 + 200);
+
+                double mY = Math.pow(mRadius, 2);
+                mY = mY - Math.pow(((getWidth() / 2 - mX) + mArea), 2);
+                mY = Math.abs(Math.sqrt(Math.abs(mY)) - getHeight() / 6 * 5);
+
+                canvas.drawCircle((float)mX, (float)mY, 1, mPaint);
+
+                Log.e("TEST", mX + " / " + mY);
+            }
+
+            isT = true;
+        }*/
+        if(!isT) {
+            calculateParabolaPath();
+            planetAnimationStart();
+            isT = true;
+        }
+
+    }
 
     private void startAnimation() {
         if(isAutoStart) {
             start();
+        }
+    }
+
+    private void planetAnimationStart() {
+        if(isPlanetVisible) {
+            if(mAnimatorSet.isRunning()) {
+                mAnimatorSet.cancel();
+                mAnimatorSet = null;
+            }
+
+            try {
+                removeView(mPlanetView);
+            } catch(Exception e) {
+
+            }
+
+            //mPlanetView = null;
+            //mPlanetView = new AppCompatImageView(getContext());
+            final LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(200, 200);
+            mPlanetView.setLayoutParams(mParams);
+
+            mPlanetView.setX(mPathList.get(0).x);
+            mPlanetView.setY(mPathList.get(0).y);
+
+            if(mSkyTime == Time.AFTERNOON) {
+                mPlanetView.setBackgroundResource(R.drawable.sunny);
+            } else if(mSkyTime == Time.EARLY_NIGHT) {
+                mPlanetView.setBackgroundResource(R.drawable.moon);
+            } else if(mSkyTime == Time.NIGHT) {
+                mPlanetView.setBackgroundResource(R.drawable.moon_c);
+            }
+
+            addView(mPlanetView);
+
+            mAnimatorSet = new AnimatorSet();
+
+            ObjectAnimator mXAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationX", mPlanetView.getX(), (float)mPathList.get(mAnimationIndex).x);
+            ObjectAnimator mYAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationY", mPlanetView.getY(), (float)mPathList.get(mAnimationIndex).y);
+
+
+            /*final AnimatorListenerAdapter mAdapter = new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    //Log.e("TEST", "OKDFOKDFOKDOFDF");
+
+                    if(mAnimationIndex >= mPathList.size() - 1) {
+                        if(mSkyTime == Time.AFTERNOON) {
+                            changeTime(Time.EARLY_NIGHT);
+                        } else if(mSkyTime == Time.EARLY_NIGHT) {
+                            changeTime(Time.NIGHT);
+                        } else if(mSkyTime == Time.NIGHT) {
+                            changeTime(Time.AFTERNOON);
+                        }
+
+                        ObjectAnimator mXAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationX", mPlanetView.getX(), (float)mPathList.get(120).x - 200);
+                        ObjectAnimator mYAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationY", mPlanetView.getY(), (float)mPathList.get(120).y + 200);
+
+                        mAnimatorSet.playTogether(mXAnimator, mYAnimator);
+                        mAnimatorSet.setDuration(2000);
+                        mAnimatorSet.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                mAnimationIndex = 0;
+                                planetAnimationStart();
+                            }
+                        });
+                        mAnimatorSet.start();
+
+                        //mAnimationIndex = 100;
+                        //mAnimatorSet.cancel();
+
+                    } else {
+                        mAnimationIndex++;
+
+                        ObjectAnimator mXAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationX", mPlanetView.getX(), (float)mPathList.get(mAnimationIndex).x);
+                        ObjectAnimator mYAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationY", mPlanetView.getY(), (float)mPathList.get(mAnimationIndex).y);
+                        //mAnimatorSet.addListener(this);
+                        mAnimatorSet.playTogether(mXAnimator, mYAnimator);
+                        mAnimatorSet.setDuration(100);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAnimatorSet.start();
+                            }
+                        });
+                    }
+                }
+            };*/
+
+            //mAnimatorSet.setInterpolator(null);
+            mAnimatorSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    if(mAnimationIndex >= 500) {
+                        mAnimationIndex = 0;
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                isChangeWait = false;
+                                planetAnimationStart();
+                            }
+                        });
+
+                        return;
+                    }
+                    if(mAnimationIndex >= mPathList.size() - 1) {
+                        if(mSkyTime == Time.AFTERNOON) {
+                            changeTime(Time.EARLY_NIGHT);
+                        } else if(mSkyTime == Time.EARLY_NIGHT) {
+                            changeTime(Time.NIGHT);
+                        } else if(mSkyTime == Time.NIGHT) {
+                            changeTime(Time.AFTERNOON);
+                        }
+
+                        ObjectAnimator mXAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationX", mPlanetView.getX(), (float)mPathList.get(120).x - 200);
+                        ObjectAnimator mYAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationY", mPlanetView.getY(), (float)mPathList.get(120).y + 200);
+
+                        mAnimatorSet.playTogether(mXAnimator, mYAnimator);
+                        mAnimatorSet.setDuration(2000);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAnimatorSet.start();
+                            }
+                        });
+
+                        mAnimationIndex = 500;
+                    } else {
+                        ObjectAnimator mXAnimator;
+                        ObjectAnimator mYAnimator;
+
+                        if(isChangeWait) {
+                            mXAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationX", mPlanetView.getX(), (float)mPathList.get(mAnimationIndex).x);
+                            mYAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationY", mPlanetView.getY(), getHeight() + 300);
+                            mAnimatorSet.setDuration(1000);
+                            mAnimationIndex = 500;
+                        } else {
+                            mXAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationX", mPlanetView.getX(), (float)mPathList.get(mAnimationIndex).x);
+                            mYAnimator = ObjectAnimator.ofFloat(mPlanetView, "translationY", mPlanetView.getY(), (float)mPathList.get(mAnimationIndex).y);
+                        }
+                        mAnimatorSet.playTogether(mXAnimator, mYAnimator);
+                        mAnimationIndex++;
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAnimatorSet.start();
+                            }
+                        });
+
+                    }
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+
+                }
+
+                @Override
+                public void onAnimationStart(Animator animation) {
+
+                }
+            });
+            mAnimatorSet.playTogether(mXAnimator, mYAnimator);
+            mAnimatorSet.setDuration(100);
+            mAnimatorSet.start();
         }
     }
 

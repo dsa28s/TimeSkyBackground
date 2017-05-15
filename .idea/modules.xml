@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TimeSkyBackground.iml" filepath="$PROJECT_DIR$/TimeSkyBackground.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TimeSkyBackgroundView/TimeSkyBackgroundView.iml" filepath="$PROJECT_DIR$/TimeSkyBackgroundView/TimeSkyBackgroundView.iml" />
       <module fileurl="file://$PROJECT_DIR$/TimeSkyBackgroundView/app.iml" filepath="$PROJECT_DIR$/TimeSkyBackgroundView/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/TimeSkyBackgroundSample/timeskybackgroundsample.iml" filepath="$PROJECT_DIR$/TimeSkyBackgroundSample/timeskybackgroundsample.iml" />
     </modules>

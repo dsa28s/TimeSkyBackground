@@ -2,5 +2,6 @@
 <resources>
     <declare-styleable name="SkyTimeBackgroundView">
         <attr name="autoStart" format="boolean" />
+        <attr name="planetVisible" format="boolean" />
     </declare-styleable>
 </resources>
