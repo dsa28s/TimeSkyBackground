@@ -2,6 +2,8 @@ package me.sangs.time.sky.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.widget.RelativeLayout;
 
@@ -20,6 +22,7 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
     private Time mSkyTime = Time.AFTERNOON;
     private boolean isAutoStart = false;
+    private int[] mDrawables = new int[3];
 
     public SkyTimeBackgroundView(Context context) {
         super(context);
@@ -40,12 +43,35 @@ public class SkyTimeBackgroundView extends RelativeLayout {
         startAnimation();
     }
 
-    public void setTime(Time t) {
+    private void setTime(Time t) {
         mSkyTime = t;
+
+        if(mSkyTime == Time.AFTERNOON) {
+            mDrawables[0] = R.drawable.morning;
+            mDrawables[1] = R.drawable.morning_before;
+            mDrawables[2] = R.drawable.morning_after;
+        } else if(mSkyTime == Time.EARLY_NIGHT) {
+            mDrawables[0] = R.drawable.early_evening;
+            mDrawables[1] = R.drawable.early_evening_before;
+            mDrawables[2] = R.drawable.early_evening_after;
+        } else if(mSkyTime == Time.NIGHT) {
+            mDrawables[0] = R.drawable.evening;
+            mDrawables[1] = R.drawable.evening_before;
+            mDrawables[2] = R.drawable.evening_after;
+        }
     }
 
     public void changeTime(Time t) {
-        mSkyTime = t;
+        setTime(t);
+
+        if(t == Time.AFTERNOON) {
+            mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.morning_after));
+        } else if(t == Time.EARLY_NIGHT) {
+            mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.early_evening));
+        } else if(t == Time.NIGHT) {
+            mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.evening));
+        }
+
     }
 
     private void initBackground(AttributeSet attrs, int defStyle) {
@@ -61,21 +87,7 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
         mArray.recycle();
 
-        final int[] mDrawables = new int[3];
-
-        if(mSkyTime == Time.AFTERNOON) {
-            mDrawables[0] = R.drawable.morning;
-            mDrawables[1] = R.drawable.morning_before;
-            mDrawables[2] = R.drawable.morning_after;
-        } else if(mSkyTime == Time.EARLY_NIGHT) {
-            mDrawables[0] = R.drawable.early_evening;
-            mDrawables[1] = R.drawable.early_evening_before;
-            mDrawables[2] = R.drawable.early_evening_after;
-        } else if(mSkyTime == Time.NIGHT) {
-            mDrawables[0] = R.drawable.evening;
-            mDrawables[1] = R.drawable.evening_before;
-            mDrawables[2] = R.drawable.evening_after;
-        }
+        setTime(Time.AFTERNOON);
 
         mPainter = new SkyViewGradientBackgroundPainter(this, mDrawables);
     }

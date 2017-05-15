@@ -29,21 +29,21 @@ public class TimeSkyBackgroundSampleActivity extends AppCompatActivity {
         mAfternoonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+                mBackgroundView.changeTime(SkyTimeBackgroundView.Time.AFTERNOON);
             }
         });
 
         mEarlyNightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                mBackgroundView.changeTime(SkyTimeBackgroundView.Time.EARLY_NIGHT);
             }
         });
 
         mNightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                mBackgroundView.changeTime(SkyTimeBackgroundView.Time.NIGHT);
             }
         });
     }

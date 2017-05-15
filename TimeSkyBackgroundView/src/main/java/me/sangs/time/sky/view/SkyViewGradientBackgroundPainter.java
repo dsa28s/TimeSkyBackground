@@ -23,8 +23,13 @@ public class SkyViewGradientBackgroundPainter {
     private final Random random;
     private final Handler handler;
     private final View target;
-    private final int[] drawables;
+    private int[] drawables;
     private final Context context;
+
+    private Drawable mFirst;
+    private Drawable mSecond;
+
+    private boolean isChanged = false;
 
     public SkyViewGradientBackgroundPainter(@NonNull View target, int[] drawables) {
         this.target = target;
@@ -39,8 +44,10 @@ public class SkyViewGradientBackgroundPainter {
             secondDrawable = 0;
         }
 
-        final Drawable mFirst = ContextCompat.getDrawable(context, drawables[firstDrawable]);
-        final Drawable mSecond = ContextCompat.getDrawable(context, drawables[secondDrawable]);
+        setDrawables(drawables, firstDrawable, secondDrawable);
+
+        mFirst = ContextCompat.getDrawable(context, drawables[firstDrawable]);
+        mSecond = ContextCompat.getDrawable(context, drawables[secondDrawable]);
 
         final TransitionDrawable mTransitionDrawable = new TransitionDrawable(new Drawable[] {mFirst, mSecond});
 
@@ -50,7 +57,7 @@ public class SkyViewGradientBackgroundPainter {
             target.setBackgroundDrawable(mTransitionDrawable);
         }
 
-        mTransitionDrawable.setCrossFadeEnabled(true);
+        mTransitionDrawable.setCrossFadeEnabled(false);
         mTransitionDrawable.startTransition(duration);
 
         final int mLocalSecondDrawable = secondDrawable;
@@ -62,9 +69,52 @@ public class SkyViewGradientBackgroundPainter {
         }, duration);
     }
 
+    private void animate(Drawable d1, Drawable d2, int duration) {
+        mFirst = d1;
+        mSecond = d2;
+
+        final TransitionDrawable mTransitionDrawable = new TransitionDrawable(new Drawable[] {mFirst, mSecond});
+
+        if(Build.VERSION.SDK_INT >= 17) {
+            target.setBackground(mTransitionDrawable);
+        } else {
+            target.setBackgroundDrawable(mTransitionDrawable);
+        }
+
+        mTransitionDrawable.setCrossFadeEnabled(false);
+        mTransitionDrawable.startTransition(duration);
+
+        if(isChanged) {
+            isChanged = false;
+            animate(mFirst, mSecond, 2000);
+            //animate(0, 1, randomInt(MIN, MAX));
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    animate(0, 1, randomInt(MIN, MAX));
+                }
+            }, 2000);
+        }
+    }
+
+    protected void setDrawables(int[] drawables, int i, int ii) {
+        this.drawables = drawables;
+
+        mFirst = ContextCompat.getDrawable(context, drawables[i]);
+        mSecond = ContextCompat.getDrawable(context, drawables[ii]);
+    }
+
     public void start() {
         final int duration = randomInt(MIN, MAX);
         animate(0, 1, duration);
+    }
+
+    protected void startAnimationInInternalPosition(int[] drawables, Drawable d1, Drawable d2) {
+        isChanged = true;
+        stop();
+
+        setDrawables(drawables, 0, 1);
+        animate(d1, d2, randomInt(MIN, MAX));
     }
 
     public void stop() {
