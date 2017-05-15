@@ -8,8 +8,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/TimeSkyBackgroundSample" />
             <option value="$PROJECT_DIR$/TimeSkyBackgroundView" />
-            <option value="$PROJECT_DIR$/timeskybackgroundsample" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

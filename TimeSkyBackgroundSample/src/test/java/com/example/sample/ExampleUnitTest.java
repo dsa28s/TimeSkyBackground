@@ -1,4 +1,4 @@
-package com.example.timeskybackgroundsample;
+package com.example.sample;
 
 import org.junit.Test;
 

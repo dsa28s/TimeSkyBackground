@@ -1,4 +1,4 @@
-package com.example.timeskybackgroundsample;
+package com.example.sample;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
