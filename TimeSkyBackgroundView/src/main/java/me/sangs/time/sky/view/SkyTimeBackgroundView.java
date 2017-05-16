@@ -81,13 +81,14 @@ public class SkyTimeBackgroundView extends RelativeLayout {
             mDrawables[1] = R.drawable.morning_before;
             mDrawables[2] = R.drawable.morning_after;
         } else if(mSkyTime == Time.EARLY_NIGHT) {
-            mDrawables[0] = R.drawable.early_evening;
-            mDrawables[1] = R.drawable.early_evening_before;
-            mDrawables[2] = R.drawable.early_evening_after;
-        } else if(mSkyTime == Time.NIGHT) {
             mDrawables[0] = R.drawable.evening;
             mDrawables[1] = R.drawable.evening_before;
             mDrawables[2] = R.drawable.evening_after;
+        } else if(mSkyTime == Time.NIGHT) {
+            mDrawables[0] = R.drawable.early_evening;
+            mDrawables[1] = R.drawable.early_evening_before;
+            mDrawables[2] = R.drawable.early_evening_after;
+
         }
     }
 
@@ -98,12 +99,16 @@ public class SkyTimeBackgroundView extends RelativeLayout {
             if(t == Time.AFTERNOON) {
                 mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.morning_after));
             } else if(t == Time.EARLY_NIGHT) {
-                mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.early_evening));
-            } else if(t == Time.NIGHT) {
                 mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.evening));
+            } else if(t == Time.NIGHT) {
+                mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.early_evening));
             }
 
             isChangeWait = true;
+
+            if(!isPlanetAnimationOn) {
+                changePlanet();
+            }
         }
     }
 
@@ -207,6 +212,16 @@ public class SkyTimeBackgroundView extends RelativeLayout {
         }
     }
 
+    private void changePlanet() {
+        if(mSkyTime == Time.AFTERNOON) {
+            mPlanetView.setBackgroundResource(R.drawable.sunny);
+        } else if(mSkyTime == Time.EARLY_NIGHT) {
+            mPlanetView.setBackgroundResource(R.drawable.moon);
+        } else if(mSkyTime == Time.NIGHT) {
+            mPlanetView.setBackgroundResource(R.drawable.moon_c);
+        }
+    }
+
     private void planetAnimationStart() {
         if(isPlanetVisible) {
             if(mAnimatorSet.isRunning()) {
@@ -235,13 +250,7 @@ public class SkyTimeBackgroundView extends RelativeLayout {
                 }
             });
 
-            if(mSkyTime == Time.AFTERNOON) {
-                mPlanetView.setBackgroundResource(R.drawable.sunny);
-            } else if(mSkyTime == Time.EARLY_NIGHT) {
-                mPlanetView.setBackgroundResource(R.drawable.moon);
-            } else if(mSkyTime == Time.NIGHT) {
-                mPlanetView.setBackgroundResource(R.drawable.moon_c);
-            }
+            changePlanet();
 
             addView(mPlanetView);
 
