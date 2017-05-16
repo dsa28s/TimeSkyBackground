@@ -3,5 +3,8 @@
     <declare-styleable name="SkyTimeBackgroundView">
         <attr name="autoStart" format="boolean" />
         <attr name="planetVisible" format="boolean" />
+        <attr name="planetPosition" format="integer" />
+        <attr name="planetAnimation" format="boolean" />
+        <attr name="planetSpeed" format="integer" />
     </declare-styleable>
 </resources>

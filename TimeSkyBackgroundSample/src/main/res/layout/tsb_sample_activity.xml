@@ -9,7 +9,10 @@
         android:id="@+id/timeBackgroundView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:autoStart="true"/>
+        app:autoStart="true"
+        app:planetVisible="true"
+        app:planetPosition="70"
+        app:planetAnimation="true"/>
 
     <LinearLayout
         android:layout_width="match_parent"
