@@ -7,16 +7,10 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.PointF;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -96,17 +90,19 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     }
 
     public void changeTime(Time t) {
-        setTime(t);
+        if(mSkyTime != t) {
+            setTime(t);
 
-        if(t == Time.AFTERNOON) {
-            mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.morning_after));
-        } else if(t == Time.EARLY_NIGHT) {
-            mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.early_evening));
-        } else if(t == Time.NIGHT) {
-            mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.evening));
+            if(t == Time.AFTERNOON) {
+                mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.morning_after));
+            } else if(t == Time.EARLY_NIGHT) {
+                mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.early_evening));
+            } else if(t == Time.NIGHT) {
+                mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.evening));
+            }
+
+            isChangeWait = true;
         }
-
-        isChangeWait = true;
     }
 
     private void initBackground(AttributeSet attrs, int defStyle) {
