@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -45,8 +46,9 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
     private boolean isChangeWait = false;
 
-    private Handler mHandler = new Handler();
 
+
+    private Handler mHandler = new Handler();
     private ArrayList<Point> mPathList = new ArrayList();
 
     int mAnimationIndex = 0;
@@ -173,8 +175,10 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
     boolean isT = false;
 
+    @Override
     protected void onDraw(Canvas canvas) {
-        //super.onDraw(canvas);
+        super.onDraw(canvas);
+
         /*Paint mPaint = new Paint();
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.RED);
@@ -200,6 +204,9 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
             isT = true;
         }*/
+
+
+
         if(!isT) {
             calculateParabolaPath();
             planetAnimationStart();
@@ -341,6 +348,10 @@ public class SkyTimeBackgroundView extends RelativeLayout {
                 mAnimatorSet.start();
             }
         }
+    }
+
+    public void showStar() {
+
     }
 
     public void start() {
