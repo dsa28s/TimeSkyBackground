@@ -37,6 +37,7 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     private boolean isAutoStart = false;
     private boolean isPlanetVisible = false;
     private int planetPosition = 0;
+    private int mPlanetSpeed = 0;
     private boolean isPlanetAnimationOn = false;
     private int[] mDrawables = new int[3];
     private AnimatorSet mAnimatorSet = new AnimatorSet();
@@ -128,6 +129,7 @@ public class SkyTimeBackgroundView extends RelativeLayout {
         isPlanetVisible = mArray.getBoolean(R.styleable.SkyTimeBackgroundView_planetVisible, true);
 
         planetPosition = mArray.getInt(R.styleable.SkyTimeBackgroundView_planetPosition, 0);
+        mPlanetSpeed = mArray.getInt(R.styleable.SkyTimeBackgroundView_planetSpeed, 300);
 
         mAnimationIndex = planetPosition;
 
@@ -335,7 +337,7 @@ public class SkyTimeBackgroundView extends RelativeLayout {
                     }
                 });
                 mAnimatorSet.playTogether(mXAnimator, mYAnimator);
-                mAnimatorSet.setDuration(100);
+                mAnimatorSet.setDuration(mPlanetSpeed);
                 mAnimatorSet.start();
             }
         }
