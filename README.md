@@ -25,8 +25,6 @@ buildscript {
 ```
 
 1. Include the following dependency in your `build.gradle` file.
-   
-   (Tomorrow, will be register in jcenter)
 
 ```groovy
 compile 'me.sangs:TimeSkyBackgroundView:1.0.0'
