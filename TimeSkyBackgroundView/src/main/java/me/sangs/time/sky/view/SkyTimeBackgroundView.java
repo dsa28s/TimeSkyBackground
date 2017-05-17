@@ -53,8 +53,9 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     private ParticlesDrawable mStarDrawable;
 
     private boolean isChangeWait = false;
-
-
+    private boolean isStarVisible = false;
+    private boolean isStarLineVisible = false;
+    private boolean isStarLineVisibleAuto = false;
 
     private Handler mHandler = new Handler();
     private ArrayList<Point> mPathList = new ArrayList();
@@ -157,6 +158,17 @@ public class SkyTimeBackgroundView extends RelativeLayout {
         isAutoStart = mArray.getBoolean(R.styleable.SkyTimeBackgroundView_autoStart, false);
         isPlanetAnimationOn = mArray.getBoolean(R.styleable.SkyTimeBackgroundView_planetAnimation, false);
         isPlanetVisible = mArray.getBoolean(R.styleable.SkyTimeBackgroundView_planetVisible, true);
+        isStarVisible = mArray.getBoolean(R.styleable.SkyTimeBackgroundView_starVisible, true);
+        if(mArray.getString(R.styleable.SkyTimeBackgroundView_starLineVisible) != null) {
+            if(mArray.getString(R.styleable.SkyTimeBackgroundView_starLineVisible).equals("auto")) {
+                isStarLineVisible = mArray.getBoolean(R.styleable.SkyTimeBackgroundView_starLineVisible, true);
+                isStarLineVisibleAuto = true;
+            }
+        } else{
+            isStarLineVisible = mArray.getBoolean(R.styleable.SkyTimeBackgroundView_starLineVisible, true);
+            isStarLineVisibleAuto = false;
+        }
+
 
         planetPosition = mArray.getInt(R.styleable.SkyTimeBackgroundView_planetPosition, 0);
         mPlanetSpeed = mArray.getInt(R.styleable.SkyTimeBackgroundView_planetSpeed, 300);
@@ -252,10 +264,33 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     private void changePlanet() {
         if(mSkyTime == Time.AFTERNOON) {
             mPlanetView.setBackgroundResource(R.drawable.sunny);
+            hideStar();
         } else if(mSkyTime == Time.EARLY_NIGHT) {
             mPlanetView.setBackgroundResource(R.drawable.moon);
+            if(isStarVisible) {
+                if(isStarLineVisibleAuto || isStarLineVisible) { //AUTO LINE
+                    mStarDrawable.setLineVisibility(false);
+                }
+
+                showStar();
+            } else {
+                hideStar();
+            }
         } else if(mSkyTime == Time.NIGHT) {
             mPlanetView.setBackgroundResource(R.drawable.moon_c);
+
+            if(isStarVisible) {
+                if(isStarLineVisibleAuto) {
+                    mStarDrawable.setLineVisibility(true);
+                } else if(isStarLineVisible) {
+                    mStarDrawable.setLineVisibility(true);
+                } else {
+                    mStarDrawable.setLineVisibility(false);
+                }
+                showStar();
+            } else {
+                hideStar();
+            }
         }
     }
 
