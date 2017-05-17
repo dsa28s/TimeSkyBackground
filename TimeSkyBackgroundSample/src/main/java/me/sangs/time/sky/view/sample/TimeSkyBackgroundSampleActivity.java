@@ -53,7 +53,8 @@ public class TimeSkyBackgroundSampleActivity extends AppCompatActivity {
 
         mBackgroundView.setPlanetPosition(111);
         mBackgroundView.usePlanetAnimation(true);
-        mBackgroundView.setPlanetSpeed(100);
-        mBackgroundView.setPlanet(SkyTimeBackgroundView.Planet.MOON);
+        mBackgroundView.setPlanetSpeed(50);
+        mBackgroundView.setStarVisibility(true);
+        //mBackgroundView.setPlanet(SkyTimeBackgroundView.Planet.MOON);
     }
 }
