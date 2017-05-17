@@ -7,17 +7,23 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
 
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import me.sangs.time.sky.view.particle.ParticlesDrawable;
 import me.sangs.time.sky.view.utils.Point;
 import me.sangs.time.sky.view.utils.SkyViewUtils;
 
@@ -43,6 +49,8 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     private int[] mDrawables = new int[3];
     private AnimatorSet mAnimatorSet = new AnimatorSet();
     private AppCompatImageView mPlanetView;
+    private AppCompatImageView mStarView;
+    private ParticlesDrawable mStarDrawable;
 
     private boolean isChangeWait = false;
 
@@ -117,6 +125,26 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
     private void initBackground(AttributeSet attrs, int defStyle) {
         mPlanetView = new AppCompatImageView(getContext());
+
+        mStarView = new AppCompatImageView(getContext());
+        final LinearLayout.LayoutParams mParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mStarView.setLayoutParams(mParams);
+        addView(mStarView);
+
+        mStarView.setAlpha(0f);
+
+        mStarDrawable = new ParticlesDrawable();
+        mStarDrawable.setStepMultiplier(0.5f);
+        //mStarDrawable.setFrameDelay(2000);
+        mStarDrawable.setLineVisibility(false);
+
+        if(Build.VERSION.SDK_INT >= 16) {
+            mStarView.setBackground(mStarDrawable);
+        } else {
+            mStarView.setBackgroundDrawable(mStarDrawable);
+        }
+
+        mStarView.setImageResource(R.drawable.alpha_gradient);
 
         TypedArray mArray;
 
@@ -252,13 +280,6 @@ public class SkyTimeBackgroundView extends RelativeLayout {
             mPlanetView.setX(mPathList.get(mAnimationIndex).x);
             mPlanetView.setY(mPathList.get(mAnimationIndex).y);
 
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
-
             changePlanet();
 
             addView(mPlanetView);
@@ -351,7 +372,41 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     }
 
     public void showStar() {
+        if(!mStarDrawable.isRunning()) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ObjectAnimator mAnimator = ObjectAnimator.ofFloat(mStarView, "alpha", 0f, 1f);
+                    mAnimator.setDuration(2000);
+                    mAnimator.start();
+                    mStarDrawable.start();
+                }
+            });
+        }
+    }
 
+    public void hideStar() {
+        if(!mStarDrawable.isRunning()) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    ObjectAnimator mAnimator = ObjectAnimator.ofFloat(mStarView, "alpha", 1f, 0f);
+                    mAnimator.setDuration(2000);
+                    mAnimator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mStarDrawable.stop();
+                        }
+                    });
+                    mAnimator.start();
+
+                }
+            });
+        }
+    }
+
+    public void setStarLineVisibility(boolean b) {
+        mStarDrawable.setLineVisibility(b);
     }
 
     public void start() {

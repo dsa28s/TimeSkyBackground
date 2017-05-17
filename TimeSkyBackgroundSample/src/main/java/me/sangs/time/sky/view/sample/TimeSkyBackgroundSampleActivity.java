@@ -38,6 +38,7 @@ public class TimeSkyBackgroundSampleActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mBackgroundView.changeTime(SkyTimeBackgroundView.Time.EARLY_NIGHT);
                 mBackgroundView.showStar();
+                mBackgroundView.setStarLineVisibility(false);
             }
         });
 
@@ -46,6 +47,7 @@ public class TimeSkyBackgroundSampleActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mBackgroundView.changeTime(SkyTimeBackgroundView.Time.NIGHT);
                 mBackgroundView.showStar();
+                mBackgroundView.setStarLineVisibility(true);
             }
         });
     }
