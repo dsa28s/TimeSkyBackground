@@ -9,8 +9,25 @@ Interactive sky background widget, only declare on XML in your development app!
 # Usage
 
 For a working implementation of this project see the `sample/` folder.
-1. This library not yet registered with jcenter. Not yet available. 
+
+Include the following URL in your root `build.gradle` file.
+
+```groovy
+buildscript {
+    repositories {
+        ...
+        maven {
+            url 'https://dl.bintray.com/leeshoon1344/TimeSkyBackgroundView'
+        }
+    }
+    ...
+}
+```
+
+1. This library not yet registered with jcenter. (Maybe... tomorrow...?)
    (If available) Include the following dependency in your `build.gradle` file.
+   
+   (Tomorrow, will be register in jcenter)
 
 ```groovy
 compile 'me.sangs:TimeSkyBackgroundView:1.0.0'
