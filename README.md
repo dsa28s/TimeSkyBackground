@@ -8,9 +8,10 @@ Interactive sky background widget, only declare on XML in your development app!
 
 # Usage
 
-For a working implementation of this project see the `sample/` folder.
+For a working implementation of this project see the `timeskybackgroundsample/` folder.
 
-Include the following URL in your root `build.gradle` file.
+0. This library not yet registered with jcenter. (Maybe... tomorrow...?)
+   Include the following URL in your root `build.gradle` file.
 
 ```groovy
 buildscript {
@@ -24,8 +25,7 @@ buildscript {
 }
 ```
 
-1. This library not yet registered with jcenter. (Maybe... tomorrow...?)
-   (If available) Include the following dependency in your `build.gradle` file.
+1. Include the following dependency in your `build.gradle` file.
    
    (Tomorrow, will be register in jcenter)
 
