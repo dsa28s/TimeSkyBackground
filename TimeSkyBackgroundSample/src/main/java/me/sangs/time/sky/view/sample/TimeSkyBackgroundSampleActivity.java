@@ -46,9 +46,14 @@ public class TimeSkyBackgroundSampleActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mBackgroundView.changeTime(SkyTimeBackgroundView.Time.NIGHT);
-                mBackgroundView.setStarVisibility(false);
+                //mBackgroundView.setStarVisibility(false);
                 mBackgroundView.setStarLineVisibility(true);
             }
         });
+
+        mBackgroundView.setPlanetPosition(111);
+        mBackgroundView.usePlanetAnimation(true);
+        mBackgroundView.setPlanetSpeed(100);
+        mBackgroundView.setPlanet(SkyTimeBackgroundView.Planet.MOON);
     }
 }

@@ -8,6 +8,7 @@
         <attr name="planetSpeed" format="integer" />
         <attr name="starVisible" format="boolean" />
         <attr name="starLineVisible" format="boolean|string" />
+        <attr name="planetType" format="string" />
     </declare-styleable>
     <declare-styleable name="ParticlesDrawable">
         <attr name="minDotRadius" format="dimension"/>

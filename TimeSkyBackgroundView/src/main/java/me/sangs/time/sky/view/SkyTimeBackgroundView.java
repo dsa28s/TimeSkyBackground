@@ -10,6 +10,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.IntRange;
+import android.support.annotation.IntegerRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
@@ -32,12 +34,23 @@ import me.sangs.time.sky.view.utils.SkyViewUtils;
  */
 
 public class SkyTimeBackgroundView extends RelativeLayout {
+    public static final String SUN = "sun";
+    public static final String RED_SUN = "redSun";
+    public static final String MOON = "moon";
+
     private SkyViewGradientBackgroundPainter mPainter;
 
     public enum Time {
         AFTERNOON,
         EARLY_NIGHT,
-        NIGHT
+        NIGHT,
+        CUSTOM
+    }
+
+    public enum Planet {
+        SUN,
+        RED_SUN,
+        MOON
     }
 
     private Time mSkyTime = Time.AFTERNOON;
@@ -46,7 +59,9 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     private int planetPosition = 0;
     private int mPlanetSpeed = 0;
     private boolean isPlanetAnimationOn = false;
+    private String mPlanetType;
     private int[] mDrawables = new int[3];
+    //private int[] mCustomDrawables = new int[3];
     private AnimatorSet mAnimatorSet = new AnimatorSet();
     private AppCompatImageView mPlanetView;
     private AppCompatImageView mStarView;
@@ -64,25 +79,20 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
     public SkyTimeBackgroundView(Context context) {
         super(context);
-        //initBackground(null, 0);
     }
 
     public SkyTimeBackgroundView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        //calculateParabolaPath();
         initBackground(attrs, 0);
         startAnimation();
-        //planetAnimationStart();
     }
 
     public SkyTimeBackgroundView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
-        //calculateParabolaPath();
         initBackground(attrs, defStyleAttr);
         startAnimation();
-        //planetAnimationStart();
     }
 
     private void setTime(Time t) {
@@ -100,8 +110,17 @@ public class SkyTimeBackgroundView extends RelativeLayout {
             mDrawables[0] = R.drawable.early_evening;
             mDrawables[1] = R.drawable.early_evening_before;
             mDrawables[2] = R.drawable.early_evening_after;
+        } else if(mSkyTime == Time.CUSTOM) {
 
         }
+    }
+
+    public void setBackgroundGradient(@IntegerRes  int i, @IntegerRes int ii, @IntegerRes int iii) {
+        mSkyTime = Time.CUSTOM;
+
+        mDrawables[0] = i;
+        mDrawables[1] = ii;
+        mDrawables[2] = iii;
     }
 
     public void changeTime(Time t) {
@@ -114,6 +133,8 @@ public class SkyTimeBackgroundView extends RelativeLayout {
                 mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.evening));
             } else if(t == Time.NIGHT) {
                 mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), R.drawable.early_evening));
+            } else if(t == Time.CUSTOM) {
+                mPainter.startAnimationInInternalPosition(mDrawables, getBackground(), ContextCompat.getDrawable(getContext(), mDrawables[0]));
             }
 
             isChangeWait = true;
@@ -169,6 +190,22 @@ public class SkyTimeBackgroundView extends RelativeLayout {
             isStarLineVisibleAuto = false;
         }
 
+        String s = mArray.getString(R.styleable.SkyTimeBackgroundView_planetType);
+        if(s != null) {
+            switch (s) {
+                case SUN:
+                    mPlanetType = SUN;
+                    break;
+                case RED_SUN:
+                    mPlanetType = RED_SUN;
+                    break;
+                case MOON:
+                    mPlanetType = MOON;
+                    break;
+            }
+        } else {
+            mPlanetType = SUN;
+        }
 
         planetPosition = mArray.getInt(R.styleable.SkyTimeBackgroundView_planetPosition, 0);
         mPlanetSpeed = mArray.getInt(R.styleable.SkyTimeBackgroundView_planetSpeed, 300);
@@ -177,7 +214,13 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
         mArray.recycle();
 
-        setTime(Time.AFTERNOON);
+        if(mPlanetType.equals(SUN)) {
+            setTime(Time.AFTERNOON);
+        } else if(mPlanetType.equals(RED_SUN)) {
+            setTime(Time.EARLY_NIGHT);
+        } else if(mPlanetType.equals(MOON)) {
+            setTime(Time.NIGHT);
+        }
 
         mPainter = new SkyViewGradientBackgroundPainter(this, mDrawables);
     }
@@ -257,7 +300,7 @@ public class SkyTimeBackgroundView extends RelativeLayout {
 
     private void startAnimation() {
         if(isAutoStart) {
-            start();
+            backgroundAnimationStart();
         }
     }
 
@@ -290,6 +333,14 @@ public class SkyTimeBackgroundView extends RelativeLayout {
                 showStar();
             } else {
                 hideStar();
+            }
+        } else if(mSkyTime == Time.CUSTOM) {
+            if(mPlanetType.equals(SUN)) {
+                mPlanetView.setImageResource(R.drawable.sunny);
+            } else if(mPlanetType.equals(RED_SUN)) {
+                mPlanetView.setImageResource(R.drawable.moon);
+            } else if(mPlanetType.equals(MOON)) {
+                mPlanetView.setImageResource(R.drawable.moon_c);
             }
         }
     }
@@ -448,17 +499,78 @@ public class SkyTimeBackgroundView extends RelativeLayout {
         }
     }
 
+    public void setPlanetVisiblility(boolean b) {
+        isPlanetVisible = b;
+    }
+
+    public void setPlanetPosition(@IntRange(from=0, to=120) int i) {
+        planetPosition = i;
+
+        if(i > 0 && i < 121) {
+            mAnimationIndex = i;
+        } else{
+            throw new IllegalArgumentException("Position must be range 0 to 120");
+        }
+    }
+
+    public void setPlanetSpeed(int millisec) {
+        mPlanetSpeed = millisec;
+    }
+
+    public void usePlanetAnimation(boolean b) {
+        isPlanetAnimationOn = b;
+
+        if(isPlanetAnimationOn) {
+            if(mAnimatorSet != null) {
+                if(!mAnimatorSet.isRunning()) {
+                    mAnimatorSet.start();
+                }
+            }
+        } else {
+            if(mAnimatorSet != null) {
+                if(mAnimatorSet.isRunning()) {
+                    mAnimatorSet.cancel();
+                }
+            }
+        }
+    }
+
     public void setStarLineVisibility(boolean b) {
         if(isStarVisible) {
             mStarDrawable.setLineVisibility(b);
         }
     }
 
-    public void start() {
+    public void setPlanet(Planet p) {
+        if(p == Planet.SUN) {
+            mPlanetType = SUN;
+        } else if(p == Planet.RED_SUN) {
+            mPlanetType = RED_SUN;
+        } else {
+            mPlanetType = MOON;
+        }
+
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(mPlanetType.equals(SUN)) {
+                    mPlanetView.setImageResource(R.drawable.sunny);
+                } else if(mPlanetType.equals(RED_SUN)) {
+                    mPlanetView.setImageResource(R.drawable.moon);
+                } else if(mPlanetType.equals(MOON)) {
+                    mPlanetView.setImageResource(R.drawable.moon_c);
+                }
+            }
+        });
+
+        setTime(Time.CUSTOM);
+    }
+
+    public void backgroundAnimationStart() {
         mPainter.start();
     }
 
-    public void destroy() {
+    public void backgroundAnimationStop() {
         mPainter.stop();
     }
 }
