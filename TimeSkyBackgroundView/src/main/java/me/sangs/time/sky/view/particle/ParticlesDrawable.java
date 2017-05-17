@@ -627,7 +627,7 @@ public class ParticlesDrawable extends Drawable implements Animatable, Runnable 
 
         // Set line color alpha
         mPaint.setStrokeWidth(mLineThickness);
-        mPaint.setColor((mLineColor & 0x00FFFFFF) | (alpha << 24));
+        mPaint.setColor((mLineColor & 0x00FFFFFF) | alpha << 24);
         // TODO exclude radius for better performance?
         canvas.drawLine(p1.x, p1.y, p2.x, p2.y, mPaint);
     }

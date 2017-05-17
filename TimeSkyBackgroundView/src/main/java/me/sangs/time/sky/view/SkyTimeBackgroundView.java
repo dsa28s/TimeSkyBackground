@@ -406,7 +406,12 @@ public class SkyTimeBackgroundView extends RelativeLayout {
         }
     }
 
+    public void setStarVisibility(boolean b) {
+        isStarVisible = b;
+    }
+
     public void showStar() {
+        //isStarVisible = true;
         if(!mStarDrawable.isRunning()) {
             mHandler.post(new Runnable() {
                 @Override
@@ -421,27 +426,32 @@ public class SkyTimeBackgroundView extends RelativeLayout {
     }
 
     public void hideStar() {
-        if(!mStarDrawable.isRunning()) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    ObjectAnimator mAnimator = ObjectAnimator.ofFloat(mStarView, "alpha", 1f, 0f);
-                    mAnimator.setDuration(2000);
-                    mAnimator.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            mStarDrawable.stop();
-                        }
-                    });
-                    mAnimator.start();
+        //isStarVisible = false;
+        if(mStarDrawable.isRunning()) {
+            if(mStarView.getAlpha() == 1) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ObjectAnimator mAnimator = ObjectAnimator.ofFloat(mStarView, "alpha", 1f, 0f);
+                        mAnimator.setDuration(2000);
+                        mAnimator.addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                mStarDrawable.stop();
+                            }
+                        });
+                        mAnimator.start();
 
-                }
-            });
+                    }
+                });
+            }
         }
     }
 
     public void setStarLineVisibility(boolean b) {
-        mStarDrawable.setLineVisibility(b);
+        if(isStarVisible) {
+            mStarDrawable.setLineVisibility(b);
+        }
     }
 
     public void start() {
